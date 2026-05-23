@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>沖繩 6日5夜 B豬專屬玩樂攻略</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Poppins:wght@600;700&display=swap');
+        
+        body { 
+            font-family: 'Noto Sans TC', sans-serif; 
+            background-color: #f0fdf4; /* 非常淡的薄荷綠/海灘底色 */
+            background-image: radial-gradient(at 0% 0%, hsla(199,100%,94%,1) 0, transparent 50%), radial-gradient(at 100% 0%, hsla(217,100%,94%,1) 0, transparent 50%);
+            -webkit-tap-highlight-color: transparent;
+            min-height: 100vh;
+        }
+        
+        .font-poppins { font-family: 'Poppins', sans-serif; }
+
+        /* 隱藏卷軸但保持可滑動 */
+        .scroll-hide::-webkit-scrollbar { display: none; }
+        .scroll-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* 天數選擇器樣式 */
+        .day-tab {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .day-tab.active { 
+            background: linear-gradient(135deg, #0ea5e9, #2563eb);
+            color: white; 
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px -5px rgba(14, 165, 233, 0.4);
+            border-color: transparent;
+        }
+
+        /* 卡片與時間軸樣式 */
+        .card-shadow { 
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.08); 
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .card-shadow:active {
+            transform: scale(0.98);
+            box-shadow: 0 5px 20px -10px rgba(0, 0, 0, 0.1);
+        }
+        .timeline-line { 
+            position: absolute; 
+            left: 24px; 
+            top: 20px; 
+            bottom: 0; 
+            width: 2px; 
+            background: linear-gradient(to bottom, #bae6fd, #e2e8f0, transparent); 
+        }
+
+        /* 漸層圖標背景 */
+        .icon-gradient-transport { background: linear-gradient(135deg, #eff6ff, #dbeafe); border-color: white; }
+        .icon-gradient-food { background: linear-gradient(135deg, #fff7ed, #ffedd5); border-color: white; }
+        .icon-gradient-shop { background: linear-gradient(135deg, #faf5ff, #f3e8ff); border-color: white; }
+        .icon-gradient-stay { background: linear-gradient(135deg, #ecfdf5, #d1fae5); border-color: white; }
+
+        /* 動畫 */
+        @keyframes fadeSlideUp {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .animate-item {
+            animation: fadeSlideUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            opacity: 0; /* 初始隱藏，等待動畫 */
+        }
+    </style>
+</head>
+<body class="max-w-md mx-auto relative pb-32 shadow-2xl">
+
+    <!-- Header (漸層海洋風) -->
+    <header class="bg-gradient-to-br from-cyan-500 via-sky-500 to-blue-600 text-white px-6 py-8 rounded-b-[2.5rem] shadow-[0_10px_30px_-10px_rgba(14,165,233,0.5)] sticky top-0 z-50 overflow-hidden">
+        <!-- 裝飾用背景光暈 -->
+        <div class="absolute top-[-50px] right-[-50px] w-32 h-32 bg-white opacity-10 rounded-full blur-2xl"></div>
+        <div class="absolute bottom-[-20px] left-[-20px] w-24 h-24 bg-cyan-200 opacity-20 rounded-full blur-xl"></div>
+        
+        <div class="flex justify-between items-center relative z-10">
+            <div>
+                <h1 class="text-2xl font-black flex items-center gap-2 tracking-wide font-poppins">
+                    <i data-lucide="palmtree" class="text-cyan-100"></i> OKINAWAAA
+                </h1>
+                <p class="text-cyan-100 text-sm mt-1.5 font-medium tracking-wider">6日5夜 B豬專屬玩樂攻略</p>
+            </div>
+            <div class="bg-white/20 backdrop-blur-md px-4 py-2 rounded-2xl text-center border border-white/30 shadow-inner">
+                <span class="block text-[9px] uppercase font-bold tracking-widest text-cyan-50 mb-0.5">Date</span>
+                <span id="header-date" class="text-xl font-poppins font-bold text-white tracking-wide">5/24</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Day Selector -->
+    <nav class="sticky top-[100px] z-40 bg-white/70 backdrop-blur-xl py-4 overflow-x-auto scroll-hide border-b border-slate-100/50">
+        <div class="flex gap-3 px-6 min-w-max pb-1">
+            <button onclick="showDay(1)" id="tab-1" class="day-tab px-6 py-2.5 rounded-2xl text-sm font-bold text-slate-500 bg-white border border-slate-200 shadow-sm active">Day 1</button>
+            <button onclick="showDay(2)" id="tab-2" class="day-tab px-6 py-2.5 rounded-2xl text-sm font-bold text-slate-500 bg-white border border-slate-200 shadow-sm">Day 2</button>
+            <button onclick="showDay(3)" id="tab-3" class="day-tab px-6 py-2.5 rounded-2xl text-sm font-bold text-slate-500 bg-white border border-slate-200 shadow-sm">Day 3</button>
+            <button onclick="showDay(4)" id="tab-4" class="day-tab px-6 py-2.5 rounded-2xl text-sm font-bold text-slate-500 bg-white border border-slate-200 shadow-sm">Day 4</button>
+            <button onclick="showDay(5)" id="tab-5" class="day-tab px-6 py-2.5 rounded-2xl text-sm font-bold text-slate-500 bg-white border border-slate-200 shadow-sm">Day 5</button>
+            <button onclick="showDay(6)" id="tab-6" class="day-tab px-6 py-2.5 rounded-2xl text-sm font-bold text-slate-500 bg-white border border-slate-200 shadow-sm">Day 6</button>
+        </div>
+    </nav>
+
+    <!-- Content -->
+    <main id="itinerary-content" class="px-6 relative min-h-[500px]">
+        <!-- Content will be injected here -->
+    </main>
+
+    <!-- 停車場 Modal (隱藏) -->
+    <div id="parking-modal" class="hidden fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm px-4">
+        <div class="bg-white rounded-[2rem] p-6 w-full max-w-sm shadow-2xl relative animate-item" style="animation-delay: 0s">
+            <button onclick="document.getElementById('parking-modal').classList.add('hidden')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 bg-slate-100 p-2 rounded-full transition-colors">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            
+            <h3 class="text-xl font-black text-slate-800 mb-5 flex items-center gap-2">
+                <i data-lucide="circle-parking" class="text-indigo-500"></i> 酒店附近停車場
+            </h3>
+            
+            <div class="space-y-4 max-h-[60vh] overflow-y-auto scroll-hide pb-2">
+                <!-- 停車場 1 -->
+                <div class="p-4 bg-slate-50 border border-slate-100 rounded-2xl">
+                    <h4 class="font-bold text-slate-800 text-sm mb-1.5">タイムズ西２丁目</h4>
+                    <span class="text-[11px] font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md">24小時 最大 900円</span>
+                    <a href="https://www.google.com/maps/search/?api=1&query=タイムズ西２丁目+那覇" target="_blank" class="mt-3.5 flex items-center justify-center gap-1.5 w-full py-2.5 bg-white border border-slate-200 text-slate-600 text-[11px] font-bold rounded-xl shadow-sm hover:bg-slate-50 active:scale-95 transition-all">
+                        <i data-lucide="map-pin" class="w-3.5 h-3.5"></i> Google Map 導航
+                    </a>
+                </div>
+
+                <!-- 停車場 2 -->
+                <div class="p-4 bg-slate-50 border border-slate-100 rounded-2xl">
+                    <h4 class="font-bold text-slate-800 text-sm mb-1.5">タイムズ西２丁目第３</h4>
+                    <span class="text-[11px] font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md">24小時 最大 900円</span>
+                    <a href="https://www.google.com/maps/search/?api=1&query=タイムズ西２丁目第３+那覇" target="_blank" class="mt-3.5 flex items-center justify-center gap-1.5 w-full py-2.5 bg-white border border-slate-200 text-slate-600 text-[11px] font-bold rounded-xl shadow-sm hover:bg-slate-50 active:scale-95 transition-all">
+                        <i data-lucide="map-pin" class="w-3.5 h-3.5"></i> Google Map 導航
+                    </a>
+                </div>
+
+                <!-- 停車場 3 -->
+                <div class="p-4 bg-slate-50 border border-slate-100 rounded-2xl">
+                    <h4 class="font-bold text-slate-800 text-sm mb-2 leading-tight">アップルパーク ジスタス会員駐車場 <br><span class="text-[10px] text-slate-500 font-normal">(駐車券あり)</span></h4>
+                    <div class="text-[11px] text-slate-600 space-y-1.5 mb-1">
+                        <div class="flex justify-between items-center bg-white px-2.5 py-1.5 rounded-lg border border-slate-100">
+                            <span>08:00 ~ 19:00</span>
+                            <div class="text-right">
+                                <span class="block text-slate-400 text-[9px] mb-0.5">每60分 300円</span>
+                                <span class="font-bold text-indigo-600">最大 1,000円</span>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center bg-white px-2.5 py-1.5 rounded-lg border border-slate-100">
+                            <span>19:00 ~ 08:00</span>
+                            <div class="text-right">
+                                <span class="block text-slate-400 text-[9px] mb-0.5">每60分 200円</span>
+                                <span class="font-bold text-emerald-600">最大 500円</span>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="https://www.google.com/maps/search/?api=1&query=アップルパーク+ジスタス会員駐車場+那覇" target="_blank" class="mt-3.5 flex items-center justify-center gap-1.5 w-full py-2.5 bg-white border border-slate-200 text-slate-600 text-[11px] font-bold rounded-xl shadow-sm hover:bg-slate-50 active:scale-95 transition-all">
+                        <i data-lucide="map-pin" class="w-3.5 h-3.5"></i> Google Map 導航
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Footer (毛玻璃質感 Dock) -->
+    <footer class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[95%] max-w-[400px] bg-white/80 backdrop-blur-2xl border border-white rounded-[2rem] p-3 flex justify-around items-center shadow-[0_20px_40px_-10px_rgba(0,0,0,0.1)] z-50">
+        <a href="https://www.google.com/maps/search/?api=1&query=TISSAGE+HOTEL+NAHA+by+NEST" target="_blank" class="flex flex-col items-center px-2 py-1 text-slate-400 hover:text-sky-500 transition-colors">
+            <i data-lucide="hotel" class="w-6 h-6 mb-1"></i>
+            <span class="text-[10px] font-bold">返酒店</span>
+        </a>
+        
+        <!-- 泊車位按鈕 -->
+        <button onclick="document.getElementById('parking-modal').classList.remove('hidden')" class="flex flex-col items-center px-2 py-1 text-slate-400 hover:text-indigo-500 transition-colors">
+            <i data-lucide="circle-parking" class="w-6 h-6 mb-1"></i>
+            <span class="text-[10px] font-bold">泊車位</span>
+        </button>
+
+        <!-- 置頂按鈕，設計成較大的主按鈕 -->
+        <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="flex flex-col items-center justify-center shrink-0 bg-gradient-to-tr from-sky-500 to-blue-600 text-white w-14 h-14 rounded-full shadow-lg shadow-sky-500/30 transform -translate-y-4 hover:-translate-y-5 transition-transform mx-1">
+            <i data-lucide="arrow-up" class="w-6 h-6"></i>
+        </button>
+
+        <!-- 新增：睇天氣按鈕 (連結至日本氣象廳) -->
+        <a href="https://www.jma.go.jp/bosai/forecast/#area_type=offices&area_code=471000" target="_blank" class="flex flex-col items-center px-2 py-1 text-slate-400 hover:text-amber-500 transition-colors">
+            <i data-lucide="cloud-sun" class="w-6 h-6 mb-1"></i>
+            <span class="text-[10px] font-bold">睇天氣</span>
+        </a>
+
+        <a href="https://www.google.com/maps/dir/?api=1&destination=Naha+Airport" target="_blank" class="flex flex-col items-center px-2 py-1 text-slate-400 hover:text-sky-500 transition-colors">
+            <i data-lucide="plane-takeoff" class="w-6 h-6 mb-1"></i>
+            <span class="text-[10px] font-bold">去機場</span>
+        </a>
+    </footer>
+
+    <script>
+        const itineraryData = {
+            1: {
+                title: "5/24 (日): 落機即歎 LION 和牛燒肉",
+                status: "🚫 今日唔使揸車",
+                statusColor: "text-rose-600 bg-rose-50 border-rose-100",
+                events: [
+                    { time: "18:00", name: "到達那霸機場", type: "transport", info: "過關同埋攞行李", duration: "1h" },
+                    { time: "19:00", name: "機場 ➔ 酒店", type: "transport", info: "🚕 建議搭的士 (大約1500円/10分鐘)", map: "https://www.google.com/maps/dir/?api=1&origin=Naha+Airport&destination=TISSAGE+HOTEL+NAHA+by+NEST" },
+                    { time: "19:15", name: "酒店 Check-in", type: "stay", info: "🏨 TISSAGE HOTEL NAHA by NEST", duration: "30m" },
+                    { time: "20:00", name: "Yakiniku LION (松山店)", type: "food", info: "🦁 落機第一餐直落松山擦頂級和牛！入口即化，再歎杯冰凍生啤爽吓先 🍻", map: "https://www.google.com/maps/search/?api=1&query=焼肉ライオン+松山店", duration: "1.5h" },
+                    { time: "21:45", name: "MaxValu 24H 超市", type: "shop", info: "🛒 買定宵夜同埋聽日係車食嗰啲零食", map: "https://www.google.com/maps/search/?api=1&query=MaxValu+Makishi", duration: "45m" }
+                ]
+            },
+            2: {
+                title: "5/25 (一): 瘋狂掃貨買買買",
+                status: "🚗 第一日租車 (旭橋站西店攞車)",
+                statusColor: "text-sky-700 bg-sky-50 border-sky-100",
+                events: [
+                    { time: "10:00", name: "攞車出發 (Orix 旭橋站西店)", type: "transport", info: "🚗 book 咗 10 點！記得帶齊車牌、國際牌同埋護照！搞掂手續就正式自駕遊！", map: "https://www.google.com/maps/search/?api=1&query=オリックスレンタカー+旭橋駅西店", duration: "30m" },
+                    { time: "10:45", name: "泊港魚市場", type: "food", info: "🍣 必食刺身同埋海膽燒龍蝦", map: "https://www.google.com/maps/search/?api=1&query=Tomari+Iyumachi+Fish+Market", duration: "1h" },
+                    { time: "12:00", name: "Main Place", type: "shop", info: "🐹 Chiikawa Land 限定款就喺度！", map: "https://www.google.com/maps/search/?api=1&query=San-A+Naha+Main+Place", duration: "1.5h" },
+                    { time: "13:45", name: "Sports Depo", type: "shop", info: "👟 專攻 Mizuno、Salomon 波鞋", map: "https://www.google.com/maps/search/?api=1&query=Sports+Depo+Ameku", duration: "1.5h" },
+                    { time: "15:30", name: "PARCO CITY", type: "shop", info: "🛍️ 無敵海景商場，瘋狂買衫買鞋", map: "https://www.google.com/maps/search/?api=1&query=SAN-A+URASOE+WEST+COAST+PARCO+CITY", duration: "2.5h" },
+                    { time: "18:15", name: "漫畫倉庫 (浦添店)", type: "shop", info: "🧸 趁有車去尋寶！呢間公仔玩具模型超多，慢慢行慢慢 dig", map: "https://www.google.com/maps/search/?api=1&query=Manga+Souko+Urasoe", duration: "1h" },
+                    { time: "19:45", name: "屋台赤道拉麵 (首里站前店)", type: "food", info: "🍜 地道沖繩屋台風味拉麵！行勻成日食碗熱辣辣嘅拉麵最梳乎", map: "https://www.google.com/maps/search/?api=1&query=屋台赤道ラーメン+首里駅前店", duration: "1.5h" }
+                ]
+            },
+            3: {
+                title: "5/26 (二): 古宇利大橋打卡之旅",
+                status: "🚗 北部自駕遊 (要用 ETC)",
+                statusColor: "text-sky-700 bg-sky-50 border-sky-100",
+                events: [
+                    { time: "10:30", name: "Captain Kangaroo", type: "food", info: "🍔 沖繩最強漢堡包！一定要早啲去寫名等位", map: "https://www.google.com/maps/search/?api=1&query=Captain+Kangaroo+Nago", duration: "2h" },
+                    { time: "12:45", name: "古宇利島 (心形岩)", type: "stay", info: "📸 必影跨海大橋同埋心形岩", map: "https://www.google.com/maps/search/?api=1&query=Heart+Rock+Kouri+Island", duration: "1.5h" },
+                    { time: "14:45", name: "名護菠蘿園", type: "stay", info: "🍍 同B豬坐超得意嘅全自動菠蘿車遊園！周圍都係打卡位，仲可以瘋狂試食菠蘿甜品同買手信！", map: "https://www.google.com/maps/search/?api=1&query=Nago+Pineapple+Park", duration: "1.5h" },
+                    { time: "17:00", name: "永旺讀谷購物中心", type: "shop", info: "🛒 由北部返那霸途中順路去！有 MaxValu 超市、Daiso 同藥妝，最啱補給平價零食同日用品", map: "https://www.google.com/maps/search/?api=1&query=イオンタウン読谷", duration: "1h" },
+                    { time: "19:30", name: "焼鳥ごう 久茂地店", type: "food", info: "🍢 已經 book 好晒枱啦！準備瘋狂食正宗炭火燒鳥同嘆杯生啤 🍻", map: "https://www.google.com/maps/search/?api=1&query=焼鳥ごう+久茂地店", duration: "2h" }
+                ]
+            },
+            4: {
+                title: "5/27 (三): 探貓貓同埋行最大商場",
+                status: "🚗 中南部自駕遊",
+                statusColor: "text-sky-700 bg-sky-50 border-sky-100",
+                events: [
+                    { time: "10:00", name: "奧武島 (貓島)", type: "stay", info: "🐈 坐喺海堤食中本天婦羅兼搵貓貓", map: "https://www.google.com/maps/search/?api=1&query=Ojima+Island+Nakamoto+Tempura", duration: "1.5h" },
+                    { time: "12:15", name: "King Tacos (長田店)", type: "food", info: "🌮 沖繩必食名物 Taco Rice！份量超大件，同B豬些牙(share)食就最啱！", map: "https://www.google.com/maps/search/?api=1&query=キングタコス+長田店", duration: "1h" },
+                    { time: "13:30", name: "AEON Rycom 來客夢", type: "shop", info: "🛍️ 食飽飽去全島最大商場行街消化下，最後衝刺買藥妝", map: "https://www.google.com/maps/search/?api=1&query=AEON+Mall+Okinawa+Rycom", duration: "3.5h" },
+                    { time: "17:30", name: "迴轉壽司市場", type: "food", info: "🍣 美國村必食人氣壽司店", map: "https://www.google.com/maps/search/?api=1&query=Gourmet+Sushi+Market+Mihama", duration: "1.5h" }
+                ]
+            },
+            5: {
+                title: "5/28 (四): 還車前極限二手尋寶",
+                status: "🚗 還車日 (記住入滿油)",
+                statusColor: "text-amber-700 bg-amber-50 border-amber-100",
+                events: [
+                    { time: "10:30", name: "瀨長島小希臘", type: "stay", info: "✈️ 睇飛機起降，食幸福 Pancake", map: "https://www.google.com/maps/search/?api=1&query=Umikaji+Terrace+Senagajima", duration: "2h" },
+                    { time: "12:45", name: "Ashibinaa Outlet", type: "shop", info: "👜 運動精品最後減價大掃貨", map: "https://www.google.com/maps/search/?api=1&query=Okinawa+Outlet+Mall+Ashibinaa", duration: "2.5h" },
+                    { time: "15:30", name: "漫畫倉庫 (那霸/赤嶺店)", type: "shop", info: "👾 趁仲有車可以車走戰利品！去全沖繩最大嘅二手店掘寶，Chiikawa、名牌乜都有", map: "https://www.google.com/maps/search/?api=1&query=Manga+Souko+Akamine", duration: "1.5h" },
+                    { time: "17:15", name: "BOOKOFF & HARDOFF", type: "shop", info: "📚 順路再去掃多轉！打機、相機、精品、手袋通殺！買到塞滿車尾箱為止", map: "https://www.google.com/maps/search/?api=1&query=BOOKOFF+Naha", duration: "1.5h" },
+                    { time: "19:00", name: "Orix 旭橋站西店還車", type: "transport", info: "⛽ 記住入滿油先好還車，同埋keep好入油張單畀職員睇！", map: "https://www.google.com/maps/search/?api=1&query=オリックスレンタカー+旭橋駅西店", duration: "30m" },
+                    { time: "19:30", name: "國際通行街食飯", type: "shop", info: "🛍️ 還完車一身輕，同B豬去國際通慢慢行、掃街兼歎個晚餐！", map: "https://www.google.com/maps/search/?api=1&query=Kokusai+Dori", duration: "2.5h" }
+                ]
+            },
+            6: {
+                title: "5/29 (五): 駿河屋朝聖準備返歸",
+                status: "🚶 散步同埋搭單軌",
+                statusColor: "text-emerald-700 bg-emerald-50 border-emerald-100",
+                events: [
+                    { time: "09:45", name: "波上宮", type: "stay", info: "⛩️ 琉球八社之首，求返個交通安全御守", map: "https://www.google.com/maps/search/?api=1&query=Naminoue+Shrine", duration: "1h" },
+                    { time: "11:00", name: "傑克牛排館", type: "food", info: "🥩 懷舊美式風味，老字號名店", map: "https://www.google.com/maps/search/?api=1&query=Jack's+Steak+House+Naha", duration: "1.5h" },
+                    { time: "12:45", name: "駿河屋 (那霸沖映通り店)", type: "shop", info: "🔥 動漫迷天堂！喺國際通隔離，唔使揸車都去到，最後機會狂掃動漫周邊同埋扭蛋！", map: "https://www.google.com/maps/search/?api=1&query=Surugaya+Naha+Okiei-dori", duration: "1.5h" },
+                    { time: "14:15", name: "第一牧志公設市場", type: "shop", info: "🦐 沖繩人嘅廚房！新裝修完超級乾淨，同B豬入去睇吓海鮮、買啲特產同行吓街", map: "https://www.google.com/maps/search/?api=1&query=第一牧志公設市場", duration: "1h" },
+                    { time: "15:15", name: "國際通最後補貨", type: "shop", info: "🛍️ 買埋啲手信同埋零食", duration: "1h" },
+                    { time: "16:30", name: "機場 Check-in", type: "transport", info: "✈️ 帶住滿載而歸嘅行李同開心回憶返澳門啦！", duration: "2h" }
+                ]
+            }
+        };
+
+        const typeStyles = {
+            transport: { icon: 'car-front', color: 'text-blue-500', bgClass: 'icon-gradient-transport' },
+            food: { icon: 'utensils', color: 'text-orange-500', bgClass: 'icon-gradient-food' },
+            shop: { icon: 'shopping-bag', color: 'text-purple-500', bgClass: 'icon-gradient-shop' },
+            stay: { icon: 'camera', color: 'text-emerald-500', bgClass: 'icon-gradient-stay' }
+        };
+
+        function showDay(dayNum) {
+            // 更新 Tab 狀態
+            document.querySelectorAll('.day-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(`tab-${dayNum}`).classList.add('active');
+
+            const day = itineraryData[dayNum];
+            const container = document.getElementById('itinerary-content');
+            
+            // 更新 Header 的日期 (擷取 title 前面的日期例如 "5/24")
+            const dateMatch = day.title.match(/^\d+\/\d+/);
+            if(dateMatch) {
+                document.getElementById('header-date').innerText = dateMatch[0];
+            }
+
+            // 標題區塊
+            let html = `
+                <div class="mt-8 mb-8 animate-item" style="animation-delay: 0s">
+                    <h2 class="text-2xl font-black text-slate-800 leading-tight">${day.title.substring(day.title.indexOf(':') + 1).trim()}</h2>
+                    <div class="mt-3 flex items-center gap-2">
+                        <span class="px-3 py-1 rounded-full text-xs font-bold tracking-wide border ${day.statusColor}">${day.status}</span>
+                    </div>
+                </div>
+                <div class="relative">
+                    <div class="timeline-line"></div>
+            `;
+
+            // 行程卡片
+            day.events.forEach((event, idx) => {
+                const style = typeStyles[event.type];
+                // 每個卡片延遲 0.1 秒出現，製造瀑布流效果
+                const delay = (idx + 1) * 0.1; 
+                
+                html += `
+                    <div class="relative pl-14 mb-8 animate-item" style="animation-delay: ${delay}s">
+                        <!-- 圖標 -->
+                        <div class="absolute left-0 top-1 w-12 h-12 ${style.bgClass} rounded-2xl flex items-center justify-center z-10 border-4 shadow-sm">
+                            <i data-lucide="${style.icon}" class="w-[22px] h-[22px] ${style.color}"></i>
+                        </div>
+                        
+                        <!-- 卡片內容 -->
+                        <div class="bg-white p-5 rounded-[1.5rem] card-shadow border border-slate-50">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm font-poppins font-black text-sky-600 tracking-widest">${event.time}</span>
+                                ${event.duration ? `<span class="text-[10px] bg-slate-50 border border-slate-100 text-slate-500 px-2.5 py-1 rounded-lg font-bold">逗留 ${event.duration}</span>` : ''}
+                            </div>
+                            <h3 class="font-bold text-slate-800 text-lg mb-1.5 leading-tight">${event.name}</h3>
+                            <p class="text-slate-500 text-sm mb-4 leading-relaxed">${event.info}</p>
+                            ${event.map ? `
+                                <a href="${event.map}" target="_blank" class="flex items-center justify-center gap-2 w-full py-3 bg-gradient-to-r from-sky-500 to-blue-500 text-white text-xs font-bold rounded-xl shadow-md shadow-sky-500/20 tracking-wider hover:opacity-90 active:scale-[0.98] transition-all">
+                                    <i data-lucide="map-pin" class="w-4 h-4"></i> 打開地圖導航
+                                </a>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `</div>`;
+            container.innerHTML = html;
+            
+            // 重新渲染圖標
+            lucide.createIcons();
+            
+            // 讓畫面平滑回到最頂部，並稍微預留 header 空間
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        window.onload = () => {
+            showDay(1);
+            lucide.createIcons();
+        };
+    </script>
+</body>
+</html>
